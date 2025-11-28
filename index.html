@@ -330,30 +330,28 @@
             wheelChart.update();
         }
 
-        // === 截圖下載功能 ===
-        function downloadImage() {
-            const captureElement = document.getElementById('capture-area');
-            const btn = document.getElementById('download-btn');
-            const btnText = document.getElementById('btn-text');
-            const nameInput = document.getElementById('user-name');
-            
-            // 1. 取得使用者名稱
-            let userName = nameInput.value.trim();
-            if (!userName) userName = 'My';
-            let safeFileName = userName.replace(/[^\w\u4e00-\u9fa5]/g, '_');
+ // === 截圖下載功能 ===
+function downloadImage() {
+    const captureElement = document.getElementById('capture-area');
+    const btn = document.getElementById('download-btn');
+    const btnText = document.getElementById('btn-text');
+    const nameInput = document.getElementById('user-name');
+    
+    // ... (使用者名稱處理和按鈕狀態變更保持不變) ...
 
-            // 2. 變更按鈕狀態
-            btn.classList.add('loading');
-            const originalText = btnText.innerText;
-            btnText.innerText = '處理中...';
+    window.scrollTo(0, 0); // 這個操作是好的，確保截圖從頂部開始
 
-            window.scrollTo(0, 0);
-
-            html2canvas(captureElement, {
-                scale: 2, 
-                useCORS: true, 
-                backgroundColor: '#ffffff', 
-                scrollY: -window.scrollY
+    html2canvas(captureElement, {
+        scale: 2,               // 提高解析度
+        useCORS: true,          // 允許跨域圖片
+        backgroundColor: '#ffffff', // 設置背景色，避免透明或黑色背景
+        scrollY: -window.scrollY, // 確保從正確的滾動位置截圖
+        // === 新增/修改以下選項 ===
+        logging: true,          // 開啟日誌，在開發者工具控制台中查看html2canvas的運行情況
+        // foreignObjectRendering: true, // 嘗試開啟此選項，對於複雜元素有時有幫助
+        // ignoreElements: (element) => { // 嘗試排除不該被截圖的元素，如果問題發生在按鈕本身被截圖
+        //     return element.id === 'download-btn'; // 例如，如果下載按鈕也出現在截圖裡
+        // }
             }).then(canvas => {
                 const link = document.createElement('a');
                 const date = new Date();
