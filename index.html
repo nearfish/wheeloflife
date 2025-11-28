@@ -14,6 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
+        /* CSS 樣式 (保持不變) */
         body {
             font-family: 'Roboto', 'Noto Sans TC', sans-serif;
             background-color: #f8fafc;
@@ -119,7 +120,7 @@
             </div>
         </div>
 
-        <div class="bg-[#f8fafc] rounded-xl md:rounded-2xl p-5 md:p-8 border border-slate-100 mb-8 no-print">
+        <div class="bg-[#f8fafc] rounded-xl md:rounded-2xl p-5 md:p-8 border border-slate-100 mb-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b border-slate-200 pb-4 gap-2">
                 <h3 class="font-bold text-lg md:text-xl text-indigo-900 flex items-center gap-3">
                     <span class="w-1.5 h-6 bg-indigo-600 rounded-full inline-block"></span>
@@ -150,6 +151,7 @@
         </footer>
 
     </div>
+    
     <div class="w-full max-w-[1100px] mt-8 text-center px-4 pb-12 no-print">
         <p class="text-indigo-900 font-medium mb-3 text-sm md:text-base">
             ※此表單不會存檔，填寫完畢後請點擊下方按鈕，下載圖片並回傳給教練
@@ -346,7 +348,9 @@
                 useCORS: true,          // 啟用 CORS 處理
                 backgroundColor: '#ffffff', // 設置背景色
                 scrollY: -window.scrollY, // 確保從正確的滾動位置截圖
-                // logging: true,         // 【除錯建議】如果問題持續存在，請移除註釋並查看控制台訊息
+                // 【新增】允許截圖跨域內容，如果跨域字體或圖片仍然有問題，此選項可能會有幫助
+                // allowTaint: true,
+                // foreignObjectRendering: true // 複雜渲染
             }).then(canvas => {
                 const link = document.createElement('a');
                 const date = new Date();
