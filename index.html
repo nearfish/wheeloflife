@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wheel of Life Assessment</title>
     
-    <!-- Tailwind CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- html2canvas (用於網頁截圖) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@500;700&display=swap');
-
+        /* 由於已改用 <link> 標籤，這裡移除了 @import url(...) */
         body {
             font-family: 'Roboto', 'Noto Sans TC', sans-serif;
             background-color: #f8fafc;
@@ -75,45 +73,54 @@
             border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
+
+        /* 列印樣式調整 (可選，用於改善列印分頁) */
+        @media print {
+            .print-container {
+                break-inside: avoid !important; 
+            }
+            #chart-wrapper {
+                break-inside: avoid !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 1cm;
+                zoom: 90%; 
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
     </style>
 </head>
-<!-- 
-    修正點：
-    將 body 的 flex 設定改為 flex-col (垂直排列)，
-    並加上 items-center (水平置中)。
-    這樣主卡片和下方的按鈕就會垂直堆疊，不會並排顯示。
--->
+
 <body class="min-h-screen py-6 px-3 md:py-10 md:px-6 flex flex-col items-center justify-start">
 
-    <!-- 主卡片 (id="capture-area" 是截圖範圍) -->
     <div id="capture-area" class="bg-white w-full max-w-[1100px] rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl overflow-hidden p-5 md:p-12 border border-gray-100 relative">
         
-        <!-- 標題區 -->
         <header class="text-center mb-6 md:mb-10">
-          <h1 class="text-2xl md:text-5xl font-bold text-indigo-900 mb-3 md:mb-5 tracking-tight">Wheel of Life 生命之輪</h1>
+            <h1 class="text-2xl md:text-5xl font-bold text-indigo-900 mb-3 md:mb-5 tracking-tight">Wheel of Life 生命之輪</h1>
 
-          <p class="text-gray-500 text-xs md:text-base leading-relaxed max-w-3xl mx-auto px-2">
-            生命之輪代表了組成生命的各個面向，幫助我們更宏觀的觀察此刻的生命狀態。
-          </p>
+            <p class="text-gray-500 text-xs md:text-base leading-relaxed max-w-3xl mx-auto px-2">
+                生命之輪代表了組成生命的各個面向，幫助我們更宏觀的觀察此刻的生命狀態。
+            </p>
+                
+            <p class="text-gray-500 text-xs md:text-base leading-relaxed max-w-3xl mx-auto px-2">
+                你對於此時此刻的生命各個面向的滿足程度在哪裡呢？
+            </p>
             
-          <p class="text-gray-500 text-xs md:text-base leading-relaxed max-w-3xl mx-auto px-2">
-            你對於此時此刻的生命各個面向的滿足程度在哪裡呢？
-          </p>
-          
-          <br> <span class="text-xs text-indigo-500 italic mt-2 block">
-            "請依照滿意程度調整下方滑桿，越高分代表越滿意，圖表將即時描繪出生命之輪的圖形。"
-          </span>
+            <br> <span class="text-xs text-indigo-500 italic mt-2 block">
+                "請依照滿意程度調整下方滑桿，越高分代表越滿意，圖表將即時描繪出生命之輪的圖形。"
+            </span>
         </header>
 
-        <!-- 圖表區 -->
         <div class="flex justify-center mb-8 md:mb-16">
             <div id="chart-wrapper" class="relative w-full md:w-[80%] max-w-[800px] aspect-square">
                 <canvas id="lifeWheelChart"></canvas>
             </div>
         </div>
 
-        <!-- 評分控制區 (包含滑桿) -->
-        <div class="bg-[#f8fafc] rounded-xl md:rounded-2xl p-5 md:p-8 border border-slate-100 mb-8">
+        <div class="bg-[#f8fafc] rounded-xl md:rounded-2xl p-5 md:p-8 border border-slate-100 mb-8 no-print">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b border-slate-200 pb-4 gap-2">
                 <h3 class="font-bold text-lg md:text-xl text-indigo-900 flex items-center gap-3">
                     <span class="w-1.5 h-6 bg-indigo-600 rounded-full inline-block"></span>
@@ -123,43 +130,28 @@
             </div>
             
             <div id="inputs-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6 md:gap-y-10">
-                <!-- JS 自動生成滑桿 -->
-            </div>
+                </div>
         </div>
 
-        <!-- 
-           【使用者資訊區塊】 
-           放在 capture-area 內，會被截圖。
-        -->
         <div class="flex flex-col md:flex-row justify-between items-end md:items-center bg-white p-6 rounded-xl border border-slate-100 mb-4">
             
-            <!-- 稱呼輸入 -->
             <div class="w-full md:w-1/2 mb-4 md:mb-0">
                 <label for="user-name" class="block text-sm font-bold text-indigo-900 mb-2 ml-1">您的稱呼 (Your Name)：</label>
                 <input type="text" id="user-name" placeholder="請輸入名字" class="custom-input w-full px-4 py-2 rounded-lg text-slate-700 outline-none bg-slate-50 font-medium text-lg" autocomplete="off">
             </div>
 
-            <!-- 日期顯示 -->
             <div class="text-right">
                 <span class="text-xs text-slate-400 block mb-1">Date</span>
                 <span id="display-date" class="text-lg font-bold text-slate-600 font-mono tracking-wide"></span>
             </div>
         </div>
 
-        <!-- 頁尾署名 (會被截圖) -->
         <footer class="border-t border-slate-100 pt-4 text-center text-[10px] md:text-xs text-slate-400">
             Design & Developed by <strong class="text-slate-500">KIMU</strong>
         </footer>
 
     </div>
-    <!-- 結束 capture-area -->
-
-
-    <!-- 
-       【操作按鈕區】 
-       因為 body 設定了 flex-col，這個區塊會自動排列在 capture-area 的正下方。
-    -->
-    <div class="w-full max-w-[1100px] mt-8 text-center px-4 pb-12">
+    <div class="w-full max-w-[1100px] mt-8 text-center px-4 pb-12 no-print">
         <p class="text-indigo-900 font-medium mb-3 text-sm md:text-base">
             ※此表單不會存檔，填寫完畢後請點擊下方按鈕，下載圖片並回傳給教練
         </p>
@@ -330,28 +322,32 @@
             wheelChart.update();
         }
 
- // === 截圖下載功能 ===
-function downloadImage() {
-    const captureElement = document.getElementById('capture-area');
-    const btn = document.getElementById('download-btn');
-    const btnText = document.getElementById('btn-text');
-    const nameInput = document.getElementById('user-name');
-    
-    // ... (使用者名稱處理和按鈕狀態變更保持不變) ...
+        // === 截圖下載功能 ===
+        function downloadImage() {
+            const captureElement = document.getElementById('capture-area');
+            const btn = document.getElementById('download-btn');
+            const btnText = document.getElementById('btn-text');
+            const nameInput = document.getElementById('user-name');
+            
+            // 1. 取得使用者名稱
+            let userName = nameInput.value.trim();
+            if (!userName) userName = 'My';
+            let safeFileName = userName.replace(/[^\w\u4e00-\u9fa5]/g, '_');
 
-    window.scrollTo(0, 0); // 這個操作是好的，確保截圖從頂部開始
+            // 2. 變更按鈕狀態
+            btn.classList.add('loading');
+            const originalText = btnText.innerText;
+            btnText.innerText = '處理中...';
 
-    html2canvas(captureElement, {
-        scale: 2,               // 提高解析度
-        useCORS: true,          // 允許跨域圖片
-        backgroundColor: '#ffffff', // 設置背景色，避免透明或黑色背景
-        scrollY: -window.scrollY, // 確保從正確的滾動位置截圖
-        // === 新增/修改以下選項 ===
-        logging: true,          // 開啟日誌，在開發者工具控制台中查看html2canvas的運行情況
-        // foreignObjectRendering: true, // 嘗試開啟此選項，對於複雜元素有時有幫助
-        // ignoreElements: (element) => { // 嘗試排除不該被截圖的元素，如果問題發生在按鈕本身被截圖
-        //     return element.id === 'download-btn'; // 例如，如果下載按鈕也出現在截圖裡
-        // }
+            // 確保頁面滾動到頂部，以便截取整個元素
+            window.scrollTo(0, 0);
+
+            html2canvas(captureElement, {
+                scale: 2,               // 提高解析度
+                useCORS: true,          // 啟用 CORS 處理，與 <link> 修正配合
+                backgroundColor: '#ffffff', // 設置背景色
+                scrollY: -window.scrollY, // 確保從正確的滾動位置截圖
+                // logging: true,         // 開啟除錯日誌，若有問題請打開 F12 控制台查看
             }).then(canvas => {
                 const link = document.createElement('a');
                 const date = new Date();
@@ -362,11 +358,14 @@ function downloadImage() {
                 link.href = canvas.toDataURL('image/jpeg', 0.9);
                 link.click();
 
+                // 3. 恢復按鈕狀態
                 btn.classList.remove('loading');
                 btnText.innerText = originalText;
             }).catch(err => {
                 console.error('Screenshot failed:', err);
                 alert('圖片產生失敗，請手動截圖。');
+                
+                // 3. 恢復按鈕狀態
                 btn.classList.remove('loading');
                 btnText.innerText = originalText;
             });
