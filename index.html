@@ -14,7 +14,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* 由於已改用 <link> 標籤，這裡移除了 @import url(...) */
         body {
             font-family: 'Roboto', 'Noto Sans TC', sans-serif;
             background-color: #f8fafc;
@@ -22,7 +21,7 @@
             overflow-x: hidden; 
         }
 
-        /* === 滑桿樣式 === */
+        /* === 滑桿樣式 (不變) === */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
@@ -74,7 +73,7 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        /* 列印樣式調整 (可選，用於改善列印分頁) */
+        /* 列印樣式調整 */
         @media print {
             .print-container {
                 break-inside: avoid !important; 
@@ -96,7 +95,7 @@
 
 <body class="min-h-screen py-6 px-3 md:py-10 md:px-6 flex flex-col items-center justify-start">
 
-    <div id="capture-area" class="bg-white w-full max-w-[1100px] rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl overflow-hidden p-5 md:p-12 border border-gray-100 relative">
+    <div id="capture-area" class="bg-white w-full max-w-[1100px] rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl p-5 md:p-12 border border-gray-100 relative">
         
         <header class="text-center mb-6 md:mb-10">
             <h1 class="text-2xl md:text-5xl font-bold text-indigo-900 mb-3 md:mb-5 tracking-tight">Wheel of Life 生命之輪</h1>
@@ -344,10 +343,10 @@
 
             html2canvas(captureElement, {
                 scale: 2,               // 提高解析度
-                useCORS: true,          // 啟用 CORS 處理，與 <link> 修正配合
+                useCORS: true,          // 啟用 CORS 處理
                 backgroundColor: '#ffffff', // 設置背景色
                 scrollY: -window.scrollY, // 確保從正確的滾動位置截圖
-                // logging: true,         // 開啟除錯日誌，若有問題請打開 F12 控制台查看
+                // logging: true,         // 【除錯建議】如果問題持續存在，請移除註釋並查看控制台訊息
             }).then(canvas => {
                 const link = document.createElement('a');
                 const date = new Date();
